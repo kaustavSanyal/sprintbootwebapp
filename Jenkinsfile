@@ -8,7 +8,7 @@ pipeline {
   agent any
   tools {
       maven 'maven3.6.0'  //we have given this tools in global config , we are saying that you should use these tools
-      jdk 'java1.8.0'
+      //jdk 'java1.8.0'
     }
     stages 
     {
@@ -19,26 +19,32 @@ pipeline {
         sh "mvn -B -DskipTests clean package"
         }
       }
-         stage ('Test')
-           {
-            steps
-               {
-                sh 'mvn test'
-                }
-                            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
-                }
-            }
-             }      
-      stage('Building image') {
-      steps{
-        script {
-          dockerImage = docker.build registry + ":$BUILD_NUMBER"
-        }
-      }
-    }
-      stage('Push Image') {
+         //stage ('Test')
+        //   {
+         //   steps
+          //     {
+           //     sh 'mvn test'
+              //  }
+//              post {
+           //     always {
+               //     junit 'target/surefire-reports/*.xml'
+        //        }
+       //     }
+       //      }      
+     //   stage('Publish') {
+  // steps {
+//    sh 'curl -X PUT -u admin:AP68asDSgBSmSfbJHrtgYq3gLjp -T target/sprintbootwebapp-0.0.1-SNAPSHOT.jar "http://104.45.150.91:8081/artifactory/example-repo-local/my-app-1.0-SNAPSHOT.jar"'
+//   }
+//  }
+   //      stage ('Deploy')
+   //    {
+  //    steps
+  //    {
+   //    sh 'java -jar target/sprintbootwebapp-0.0.1-SNAPSHOT.jar'
+   //   }
+  //    }
+     
+       stage('Push Image') {
       steps{
          script {
             docker.withRegistry( '', registryCredential ) {
@@ -47,16 +53,6 @@ pipeline {
         }
       }
     }
-      
-      
-    
-     /*    stage ('Deploy')   --> we don't have to deploy anything
-       {
-      steps
-      {
-       sh 'java -jar target/sprintbootwebapp-0.0.1-SNAPSHOT.jar'
-      }
-      } */
       
       stage('Cleanup') {
       when {
@@ -67,17 +63,16 @@ pipeline {
         sh 'docker rm ${containerId}'
       }
     }
-    
-   stage('Run Container') {
+    stage('Run Container') {
       steps {
         sh 'docker run --name=java-app --privileged -d -p 3030:3030 -v /var/run/docker.sock:/var/run/docker.sock $registry:$BUILD_NUMBER &'
       }
     }
     stage('Remove Unused docker image') {
       steps{
-        sh "docker rmi $registry:$BUILD_NUMBER"
+        sh "docker rmi -f $registry:$BUILD_NUMBER"
       }
-    }   
+    }
 
 
  }
