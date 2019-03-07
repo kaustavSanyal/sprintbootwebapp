@@ -43,6 +43,15 @@ pipeline {
    //    sh 'java -jar target/sprintbootwebapp-0.0.1-SNAPSHOT.jar'
    //   }
   //    }
+       
+          stage('Building image') {
+      steps{
+        script {
+          //will pisck registry from variable defined
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+        }
+      }
+    }
      
        stage('Push Image') {
       steps{
@@ -65,7 +74,7 @@ pipeline {
     }
     stage('Run Container') {
       steps {
-        sh 'docker run --name=java-app --privileged -d -p 3030:3030  $registry:$BUILD_NUMBER &'
+        sh 'docker run --name=java-app --privileged -d -p 3030:3030 -v /var/run/docker.sock:/var/run/docker.sock $registry:$BUILD_NUMBER &'
       }
     }
     stage('Remove Unused docker image') {
