@@ -12,6 +12,8 @@ RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debia
 
 RUN apt update
 
+EXPOSE 3030
+
 RUN apt-cache policy docker-ce
 
 RUN apt install docker-ce
