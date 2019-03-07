@@ -1,21 +1,14 @@
-FROM jenkins
+FROM fabric8/java-alpine-openjdk8-jre
 
-USER root 
+# Set the working directory to /app
+WORKDIR /app
 
-RUN apt update
+# Copy the current directory contents into the container at /app
+COPY target/sprintbootwebapp-0.0.1-SNAPSHOT.jar /app
 
-RUN apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common
-
-RUN curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
-
-RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-
-RUN apt update
-
+# Make port 9001 available to the world outside this container
 EXPOSE 3030
 
-RUN apt-cache policy docker-ce
+# Run app.py when the container launches
+CMD ["java", "-jar", "sprintbootwebapp-0.0.1-SNAPSHOT.jar"]
 
-RUN apt install docker-ce
-
-RUN systemctl status docker
