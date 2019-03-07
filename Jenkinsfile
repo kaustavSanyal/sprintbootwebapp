@@ -3,20 +3,15 @@ pipeline {
     registry = "kaustavdocker/dockerimage"
     registryCredential = 'dockerhub'
     dockerImage = ''
-    containerId = sh(script: 'docker ps -aqf "name=node-app"', returnStdout: true)
+    containerId = sh(script: 'docker ps -aqf "name=java-app"', returnStdout: true) //to store your container id , so that it can be deleted
   }
   agent any
   tools {
-      maven 'maven3.6.0'
+      maven 'maven3.6.0'  //we have given this tools in global config , we are saying that you should use these tools
       jdk 'java1.8.0'
     }
     stages 
     {
-       stage('Cloning Git') {
-      steps {
-        git 'https://github.com/kaustavSanyal/sprintbootwebapp.git'
-      }
-    }
       stage('Build') 
       {
        steps 
@@ -75,7 +70,7 @@ pipeline {
     
    stage('Run Container') {
       steps {
-        sh 'docker run --name=node-app -d -p 3000:3000 $registry:$BUILD_NUMBER &'
+        sh 'docker run --name=java-app -d -p 3000:3000 $registry:$BUILD_NUMBER &'
       }
     }
     stage('Remove Unused docker image') {
